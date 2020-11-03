@@ -35,9 +35,15 @@ import com.example.myapplication.*
 import com.example.myapplication.animators.View360Flip
 import com.example.myapplication.databinding.FragmentGamingBinding
 import com.example.myapplication.dataclasses.Player
+import com.example.myapplication.localappdatabase.CardTimedTaskRepository
+import com.example.myapplication.localappdatabase.LocalAppDataBase
 import com.example.myapplication.utilities.*
 import com.example.myapplication.utilities.Animationz.checkCameraDistance
 import com.example.myapplication.utilities.Animationz.slideOutRightInLeftSetText
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class GamingFragment : Fragment(), View.OnClickListener {
 
@@ -59,7 +65,7 @@ class GamingFragment : Fragment(), View.OnClickListener {
 	private lateinit var listOfViews: MutableList<View>
 	private lateinit var frameLayout: FrameLayout
 
-	private val generatorTimedTask by lazy { GeneratorTimedTask(requireContext()) }
+//	private lateinit var generatorTimedTask: GeneratorTimedTask
 
 	private var currRound = 0
 	private var currTurn = 0
@@ -105,6 +111,7 @@ class GamingFragment : Fragment(), View.OnClickListener {
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 
+
 		applyViewBinding()
 		spUtil = SharedPrefUtil(requireActivity())
 		scale = spUtil.getFloat(R.string.displayMetrics)
@@ -116,6 +123,12 @@ class GamingFragment : Fragment(), View.OnClickListener {
 		setFragmentInputs()
 		(fisCard).newFragmentInstance().commit()
 		setUpTextSwitcherRoundNum()
+
+		GlobalScope.launch {
+			LocalAppDataBase.getDatabase(requireContext()).timedTaskDao().getAll().forEach {
+				Log.d("!", "$it")
+			}
+		}
 
 		btnSuccess.setOnClickListener(this)
 		btnFail.setOnClickListener(this)
@@ -475,11 +488,26 @@ class GamingFragment : Fragment(), View.OnClickListener {
 			})
 
 		if (isTimedTask) {
-			val generatedTask = generatorTimedTask.listOfTasks.random()
-			gamingViewModel.updateRandomTaskCard(generatedTask)
+//			val generatedTask = generatorTimedTask.listOfTasks.random()
+//			val generatedTask  = LocalAppDataBase.getDatabase(requireContext()).timedTaskDao().getAll().random()
+			GlobalScope.launch {
+				val generatedTask =
+					CardTimedTaskRepository(LocalAppDataBase
+						.getDatabase(requireContext()).timedTaskDao())
+						.allCardTimedTask
+						.random()
+				makeLogD("$generatedTask")
+				withContext(Dispatchers.Main) {
+					gamingViewModel.updateRandomTaskCard(generatedTask)
+					sharedViewModel.apply {
+						cardTimeTaskDelete(generatedTask)
+					}
+					startTimer(generatedTask.seconds)
+					displayTimedTask()
+				}
 
-			displayTimedTask()
-			startTimer(generatedTask.seconds)
+			}
+
 		} else {
 			gamingViewModel.currentTurn.postUpdateIntBy(1)
 		}

@@ -71,6 +71,7 @@ class GameInputFragment : Fragment(), View.OnClickListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
+
         _binding = FragmentGamingInputBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
@@ -203,6 +204,7 @@ class GameInputFragment : Fragment(), View.OnClickListener {
         sharedViewModel.apply {
             createRandomTaskList()
             createListOfMissionConsequence()
+            addTasksToDatabase()
         }
     }
 

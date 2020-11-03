@@ -9,24 +9,14 @@ class GeneratorTimedTask(val context: Context) {
 
     val res: Resources = context.resources
 
-    var listOfTasks: MutableList<CardTimedTask> = mutableListOf()
-
-    private val arrayOfColors = res.getStringArray(R.array.RandomTaskArrayOfColors)
+    val arrayOfColors = res.getStringArray(R.array.RandomTaskArrayOfColors)
     private val arrayOfFeel = res.getStringArray(R.array.RandomTaskArrayOfFeel)
     private val arrayOfShapes = res.getStringArray(R.array.RandomTaskArrayOfShape)
-    private val listOfListTasks: MutableList<Array<String>> =
+    val listOfListTasks: MutableList<Array<String>> =
         arrayListOf(arrayOfColors, arrayOfFeel, arrayOfShapes)
     private val arrayOfCons = res.getStringArray(R.array.RandomTaskArrayOfCons)
 
-    init {
-
-
-        for (i in 1.. listOfListTasks.count().times(arrayOfColors.count())){
-            listOfTasks.add(CardTimedTask(randomListTask(), randomListCon(), 15L))
-        }
-    }
-
-    private fun randomListTask(): String {
+    fun randomListTask(): String {
         val randomList = listOfListTasks.getRandomList()
         val randomTask = randomList.getRandom()
 
@@ -40,7 +30,7 @@ class GeneratorTimedTask(val context: Context) {
         }.toString()
     }
 
-    private fun randomListCon(): String {
+    fun randomListCon(): String {
         val randomCon = arrayOfCons.getRandom()
 
         return StringBuilder().apply {

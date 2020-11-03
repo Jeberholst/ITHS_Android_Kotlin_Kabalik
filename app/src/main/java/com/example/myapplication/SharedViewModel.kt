@@ -6,8 +6,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.dataclasses.Player
 import com.example.myapplication.gaming.CardMissionConsequence
+import com.example.myapplication.gaming.CardTimedTask
 import com.example.myapplication.gaming.GeneratorMissionOrConsequence
+import com.example.myapplication.gaming.GeneratorTimedTask
+import com.example.myapplication.localappdatabase.CardTimedTaskRepository
+import com.example.myapplication.localappdatabase.LocalAppDataBase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -18,13 +23,14 @@ class SharedViewModel(application: Application) : AndroidViewModel(application),
     override var listOfPlayers = mutableListOf<Player>()
     override var lopSortedByPoints = mutableListOf<Player>()
     override var listOfRandomTimedTaskTurns =
-        mutableListOf<Int>() // TODO: 2020-10-18 MAKE LIST IN ADVANCE, LIKE listOfMissionAND
+        mutableListOf<Int>()
     override var listOfMissionOrConsequenceTurns =
         mutableListOf<Pair<Int, CardMissionConsequence>>()
     private val evenTurns: Int get() = pCount.plus(1)
     override val amRounds: Int get() = amountOfRounds.value!!
     override val pCount: Int get() = playerCount.value!!
     override val totalTurnsPlus: Int get() = amRounds.times(pCount).plus(amRounds)
+
 
     override var currentFragmentPos = MutableLiveData<Int>().apply {
         value = 0
@@ -89,9 +95,45 @@ class SharedViewModel(application: Application) : AndroidViewModel(application),
                 listOfExcludeValues.addAll(ranExcludeInterval)
             }
 
-        }while (listTasksTurns.count() != pCount)
+        } while (listTasksTurns.count() != pCount)
 
         listOfRandomTimedTaskTurns.addAll(listTasksTurns)
+    }
+
+    private val db = LocalAppDataBase.getDatabase(context)
+    private val timedTaskDao = db.timedTaskDao()
+    private val repository: CardTimedTaskRepository get() = CardTimedTaskRepository(timedTaskDao)
+
+    fun addTasksToDatabase() = GlobalScope.launch {
+
+        val generatorTimedTask = GeneratorTimedTask(context)
+
+        db.clearAllTables()
+
+        for (i in 1..generatorTimedTask.listOfListTasks.count()
+            .times(generatorTimedTask.arrayOfColors.count())) {
+            CardTimedTask(
+                uid = null,
+                task = generatorTimedTask.randomListTask(),
+                consequence = generatorTimedTask.randomListCon(),
+                15L)
+
+                .apply {
+                    cardTimeTaskInsert(this)
+                }
+
+            // repository.insertEntity(ctt)
+        }
+
+    }
+
+    private fun cardTimeTaskInsert(cardTimedTask: CardTimedTask) =
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.insertEntity(cardTimedTask)
+        }
+
+    fun cardTimeTaskDelete(cardTimedTask: CardTimedTask) = viewModelScope.launch(Dispatchers.IO) {
+        repository.deleteEntity(cardTimedTask)
     }
 
     private fun Int.createTaskExcludeTurns(excludeRef: Int): MutableList<Int> {

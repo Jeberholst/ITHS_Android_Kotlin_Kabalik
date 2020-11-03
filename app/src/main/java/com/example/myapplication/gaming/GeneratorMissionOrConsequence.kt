@@ -10,7 +10,8 @@ class GeneratorMissionOrConsequence(val context: Context) {
 
 	private val res: Resources = context.resources
 
-	private val listOfConsequences = res.getStringArray(R.array.Consequences).toMutableList()
+
+    private val listOfConsequences = res.getStringArray(R.array.Consequences).toMutableList()
 	private val listOfMissions = res.getStringArray(R.array.Mission).toMutableList()
 	private val listOfConsequencesPoints =
 		res.getIntArray(R.array.ConsequencesPoints).toMutableList()

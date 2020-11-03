@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.databinding.ActivityMainBinding
 import com.example.myapplication.gaming.GamingFragment
 import com.example.myapplication.gaminginput.GameInputFragment
+import com.example.myapplication.localappdatabase.LocalAppDataBase
 import com.example.myapplication.utilities.EnScore
 import com.example.myapplication.utilities.SharedPrefUtil
 
@@ -20,7 +21,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var sharedViewModel: SharedViewModel
     private lateinit var spUtil: SharedPrefUtil
-
 
     private val listOfFragment: MutableList<TransactionFragment> =
         mutableListOf(
@@ -34,10 +34,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        LocalAppDataBase.getDatabase(this)
+
         sharedViewModel = ViewModelProvider(
             this,
             ViewModelProvider.AndroidViewModelFactory.getInstance(application)
         ).get(SharedViewModel::class.java)
+
         spUtil = SharedPrefUtil(this).apply {
             putFloat(getString(R.string.displayMetrics), resources.displayMetrics.density)
         }
