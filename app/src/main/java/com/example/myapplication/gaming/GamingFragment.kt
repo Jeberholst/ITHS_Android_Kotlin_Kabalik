@@ -502,7 +502,7 @@ class GamingFragment : Fragment(), View.OnClickListener {
 					sharedViewModel.apply {
 						cardTimeTaskDelete(generatedTask)
 					}
-					startTimer(generatedTask.seconds)
+					startTimer(generatedTask.seconds as Long)
 					displayTimedTask()
 				}
 

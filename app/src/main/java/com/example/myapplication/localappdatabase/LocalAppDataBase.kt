@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.myapplication.gaming.CardTimedTask
 
-@Database(entities = [CardTimedTask::class], version = 1)
+@Database(entities = [CardTimedTask::class], version = 2)
 abstract class LocalAppDataBase : RoomDatabase() {
 
     abstract fun timedTaskDao(): TimedTaskDao
@@ -25,7 +25,7 @@ abstract class LocalAppDataBase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     LocalAppDataBase::class.java,
-                    "CardTimeTaskTable.db")
+                    "localapp.db")
                     .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance

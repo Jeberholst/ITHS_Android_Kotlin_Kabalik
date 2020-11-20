@@ -1,14 +1,15 @@
 package com.example.myapplication.gaming
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "CardTimeTaskTable")
+@Entity(tableName = "cardtimedtasktable")
 data class CardTimedTask(
 
-    @PrimaryKey(autoGenerate = true) val uid: Int? = 0,
+    @PrimaryKey(autoGenerate = true) var uid: Int?,
 
-    var task: String = "",
-    var consequence: String = "",
-    var seconds: Long = 0,
+    @ColumnInfo(name = "task") var task: String? = "",
+    @ColumnInfo(name = "consequence") var consequence: String? = "",
+    @ColumnInfo(name = "seconds")  var seconds: Long? = 0L,
 )

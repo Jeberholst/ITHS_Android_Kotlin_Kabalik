@@ -6,7 +6,7 @@ import com.example.myapplication.gaming.CardTimedTask
 @Dao
 interface TimedTaskDao {
 
-    @Query("SELECT * FROM CardTimeTaskTable")
+    @Query("SELECT * FROM cardtimedtasktable")
     fun getAll(): List<CardTimedTask>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -18,9 +18,9 @@ interface TimedTaskDao {
     @Update
     fun update(cardTimedTask: CardTimedTask)
 
-    @Query("DELETE FROM CardTimeTaskTable")
+    @Query("DELETE FROM cardtimedtasktable")
     fun clearWholeTable()
 
-    @Query("UPDATE CardTimeTaskTable SET uid = 1")
+    @Query("UPDATE cardtimedtasktable SET uid = 1")
     fun resetPrimaryKey()
 }
